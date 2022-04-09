@@ -11,10 +11,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615501dbe4f3fe94fbf4b564abb10237, type: 3}
   m_Name: ModConfig
   m_EditorClassIdentifier: 
-  id: template
-  title: Template
-  author: 
-  description: 
+  id: Fillominordle
+  title: Fillominordle
+  author: me
+  description: 'You haven''t seen my true colors.
+
+
+    Fill in a Fillominordle from scratch in only seven guesses.
+
+
+    Based on Fillimoinordle by pwahs at https://pwahs.github.io/fillominordle/
+
+    Also thanks to Blan for helping model the module.
+
+
+    Manual can be found at ktane.timwi.de or in the manuals folder of your game.
+
+
+    If there are any bugs, contact Fartlicker777#9169 on Discord.'
   version: 
   outputFolder: build
-  previewImage: {fileID: 0}
+  previewImage: {fileID: 2800000, guid: 072b32b810747274ca39b2ebb91e45c3, type: 3}
