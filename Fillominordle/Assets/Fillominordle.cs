@@ -104,6 +104,9 @@ public class Fillominordle : MonoBehaviour {
 
    void GridPress (KMSelectable B) {
       Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, B.transform);
+      if (!CanModifyState[StageN - 1] || Animating) {
+         return;
+      }
       for (int i = 0; i < 25; i++) {
          if (B == GridButtons[i]) {
             GridButtons[Selected].GetComponent<MeshRenderer>().material = Colors[1];
@@ -279,15 +282,15 @@ public class Fillominordle : MonoBehaviour {
 
    IEnumerator RotateAround (KMSelectable B, int j) {
       for (int i = 0; i < 45; i++) {
-         B.transform.Rotate(Vector3.right * 120 * Time.deltaTime);
+         B.transform.Rotate(2.0f, 0.0f, 0.0f, Space.Self);
          yield return null;
       }
       B.GetComponent<MeshRenderer>().material = Colors[1 + j];
       for (int i = 0; i < 45; i++) {
-         B.transform.Rotate(Vector3.right * 120 * Time.deltaTime);
+         B.transform.Rotate(2.0f, 0.0f, 0.0f, Space.Self);
          yield return null;
       }
-      B.transform.Rotate(new Vector3(180, 0, 0));
+      B.transform.Rotate(180f, 0.0f, 0.0f, Space.Self);
    }
 
    int Cheggck (int i) { //0k 1y 2g
