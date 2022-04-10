@@ -42,7 +42,6 @@ public class Fillominordle : MonoBehaviour {
    };
 
    int Selected;
-   int[] DupeCounter = new int[9];
 
    int[][] NumStates = new int[][] {
       new int[25],
@@ -53,6 +52,7 @@ public class Fillominordle : MonoBehaviour {
       new int[25],
       new int[25]
    };
+   int[] GridButBroken = new int[25];
    int[][] ColStates = new int[][] {
       new int[25],
       new int[25],
@@ -140,10 +140,10 @@ public class Fillominordle : MonoBehaviour {
          return;
       }
       if (A == Arrows[0]) {
-         StageN = StageN + 1 == 8 ? 1 : StageN + 1;
+         StageN = StageN - 1 == 0 ? 7 : StageN - 1;
       }
       else {
-         StageN = StageN - 1 == 0 ? 7 : StageN - 1;
+         StageN = StageN + 1 == 8 ? 1 : StageN + 1;
       }
       UpdateStage();
    }
@@ -162,19 +162,8 @@ public class Fillominordle : MonoBehaviour {
       Debug.Log(Grid[0].ToString() + Grid[1].ToString() + Grid[2].ToString() + Grid[3].ToString() + Grid[4].ToString() + Grid[5].ToString() + Grid[6].ToString() + Grid[7].ToString() + Grid[8].ToString() + Grid[9].ToString() + Grid[10].ToString() + Grid[11].ToString() + Grid[12].ToString() + Grid[13].ToString() + Grid[14].ToString() + Grid[15].ToString() + Grid[16].ToString() + Grid[17].ToString() + Grid[18].ToString() + Grid[19].ToString() + Grid[20].ToString() + Grid[21].ToString() + Grid[22].ToString() + Grid[23].ToString() + Grid[24].ToString());
       Debug.Log(UserInput[0].ToString() + UserInput[1].ToString() + UserInput[2].ToString() + UserInput[3].ToString() + UserInput[4].ToString() + UserInput[5].ToString() + UserInput[6].ToString() + UserInput[7].ToString() + UserInput[8].ToString() + UserInput[9].ToString() + UserInput[10].ToString() + UserInput[11].ToString() + UserInput[12].ToString() + UserInput[13].ToString() + UserInput[14].ToString() + UserInput[15].ToString() + UserInput[16].ToString() + UserInput[17].ToString() + UserInput[18].ToString() + UserInput[19].ToString() + UserInput[20].ToString() + UserInput[21].ToString() + UserInput[22].ToString() + UserInput[23].ToString() + UserInput[24].ToString());
       
-      for (int i = 0; i < 9; i++) {
-         for (int j = 0; j < 25; j++) {
-            if (Grid[j] == i + 1) {
-               DupeCounter[i] = i + 1;
-            }
-         }
-      }
+      CalculateColors();
 
-      for (int i = 0; i < 25; i++) {
-         if (Cheggck(i) == 2) {
-            DupeCounter[UserInput[i] - 1]--;
-         }
-      }
       StartCoroutine(Check());
    }
 
@@ -193,8 +182,7 @@ public class Fillominordle : MonoBehaviour {
    IEnumerator Check () {
       for (int i = 0; i < CheckGroups.Length; i++) {
          for (int j = 0; j < CheckGroups[i].Length; j++) {
-            StartCoroutine(RotateAround(GridButtons[CheckGroups[i][j]], Cheggck(CheckGroups[i][j])));
-            ColStates[StageN - 1][CheckGroups[i][j]] = Cheggck(CheckGroups[i][j]);
+            StartCoroutine(RotateAround(GridButtons[CheckGroups[i][j]], ColStates[StageN - 1][CheckGroups[i][j]]));
          }
          yield return new WaitForSeconds(.3f);
       }
@@ -204,7 +192,7 @@ public class Fillominordle : MonoBehaviour {
       for (int i = 0; i < 25; i++) {
          if (ColStates[StageN - 1][i] != 2) {
             Animating = false;
-            ArrowPress(Arrows[0]);
+            ArrowPress(Arrows[1]);
             UpdateStage();
             WillSolve = false;
             break;
@@ -293,14 +281,37 @@ public class Fillominordle : MonoBehaviour {
       B.transform.Rotate(180f, 0.0f, 0.0f, Space.Self);
    }
 
-   int Cheggck (int i) { //0k 1y 2g
-      if (Grid[i] == UserInput[i]) {
-         return 2;
+   void CalculateColors () { //0 is black, 1 is yellow, 2 is green
+      for (int e = 0; e < 25; e++) { //First, set up "Broken Grid"
+         GridButBroken[e] = Grid[e];
       }
-      else if (Grid.Contains(UserInput[i]) && DupeCounter[UserInput[i] - 1] > 0) {
-         return 1;
+      
+      for (int c = 0; c < 25; c++) { //Next, find all greens
+         if (Grid[c] == UserInput[c]) {
+            ColStates[StageN - 1][c] = 2;
+            GridButBroken[c] = 0;
+         }
       }
-      return 0;
+
+      for (int o = 0; o < 25; o++) { //Finally, find all yellows
+         if (ColStates[StageN - 1][o] == 2) { //Obviously a green is not a yellow
+            continue;
+         } else {
+            if (GridButBroken.Contains(UserInput[o])) { //A yellow is only allowed if there is a cell for it to 'match up' with in the Broken Grid
+               ColStates[StageN - 1][o] = 1;
+               Remove(UserInput[o]);
+            }
+         }
+      }
+   }
+
+   void Remove (int v) { //Remove function
+      for (int k = 0; k < 25; k++) {
+         if (GridButBroken[k] == v) {
+            GridButBroken[k] = 0;
+            break;
+         }
+      }
    }
 
    void Start () {
