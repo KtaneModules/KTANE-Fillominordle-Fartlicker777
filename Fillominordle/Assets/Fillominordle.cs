@@ -1,11 +1,6 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
-using KModkit;
-using Rnd = UnityEngine.Random;
 
 public class Fillominordle : MonoBehaviour {
 
@@ -106,7 +101,7 @@ public class Fillominordle : MonoBehaviour {
 
    }
 
-   void GridPress (KMSelectable B) {
+   void GridPress (KMSelectable B) {   //Just changes where the selection mark is 
       Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, B.transform);
       if (!CanModifyState[StageN - 1] || Animating) {
          return;
@@ -120,12 +115,12 @@ public class Fillominordle : MonoBehaviour {
       }
    }
 
-   void NumPress (KMSelectable B) {
+   void NumPress (KMSelectable B) { //Changes the numbers in the grid
       Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, B.transform);
       if (!CanModifyState[StageN - 1] || Animating) {
          return;
       }
-      for (int i = 0; i < 9; i++) {
+      for (int i = 0; i < 9; i++) { //StageN is 1 indexed
          if (B == NumberButtons[i]) {
             UserInput[Selected] = i + 1;
             NumStates[StageN - 1][Selected] = UserInput[Selected];
@@ -164,7 +159,7 @@ public class Fillominordle : MonoBehaviour {
          return;
       }
       for (int i = 0; i < 25; i++) {
-         if (!FillominordleChecker.CheckIfGroupsAreCorrectSizes(i, UserInput) || NumStates[StageN - 1][i] == 0) {
+         if (!FillominordleChecker.CheckIfGroupsAreCorrectSizes(i, UserInput) || NumStates[StageN - 1][i] == 0) { //Checks for empty square and if it's a correct Fillomino
             return;
          }
       }
@@ -172,13 +167,13 @@ public class Fillominordle : MonoBehaviour {
       Animating = true;
       //Debug.Log(Grid[0].ToString() + Grid[1].ToString() + Grid[2].ToString() + Grid[3].ToString() + Grid[4].ToString() + Grid[5].ToString() + Grid[6].ToString() + Grid[7].ToString() + Grid[8].ToString() + Grid[9].ToString() + Grid[10].ToString() + Grid[11].ToString() + Grid[12].ToString() + Grid[13].ToString() + Grid[14].ToString() + Grid[15].ToString() + Grid[16].ToString() + Grid[17].ToString() + Grid[18].ToString() + Grid[19].ToString() + Grid[20].ToString() + Grid[21].ToString() + Grid[22].ToString() + Grid[23].ToString() + Grid[24].ToString());
       //Debug.Log(UserInput[0].ToString() + UserInput[1].ToString() + UserInput[2].ToString() + UserInput[3].ToString() + UserInput[4].ToString() + UserInput[5].ToString() + UserInput[6].ToString() + UserInput[7].ToString() + UserInput[8].ToString() + UserInput[9].ToString() + UserInput[10].ToString() + UserInput[11].ToString() + UserInput[12].ToString() + UserInput[13].ToString() + UserInput[14].ToString() + UserInput[15].ToString() + UserInput[16].ToString() + UserInput[17].ToString() + UserInput[18].ToString() + UserInput[19].ToString() + UserInput[20].ToString() + UserInput[21].ToString() + UserInput[22].ToString() + UserInput[23].ToString() + UserInput[24].ToString());
-      
+
       CalculateColors();
 
       StartCoroutine(Check());
    }
 
-   void UpdateStage () {
+   void UpdateStage () {   //Visually update mod
       if (Animating) {
          return;
       }
@@ -197,14 +192,14 @@ public class Fillominordle : MonoBehaviour {
       for (int i = 0; i < CheckGroups.Length; i++) {
          for (int j = 0; j < CheckGroups[i].Length; j++) {
             //Debug.Log(StageTemp);
-            StartCoroutine(RotateAround(GridButtons[CheckGroups[i][j]], ColStates[StageTemp - 1][CheckGroups[i][j]]));
+            StartCoroutine(RotateAround(GridButtons[CheckGroups[i][j]], ColStates[StageTemp - 1][CheckGroups[i][j]]));  //Animation and check
          }
          yield return new WaitForSeconds(.3f);
       }
       CanModifyState[StageN - 1] = false;
       yield return new WaitForSeconds(2f);
       bool WillSolve = true;
-      for (int i = 0; i < 25; i++) {
+      for (int i = 0; i < 25; i++) {   //Checks if any square is not green. If this is the case, we add a stage
          if (ColStates[StageN - 1][i] != 2) {
             Animating = false;
             ArrowPress(Arrows[1]);
@@ -220,7 +215,7 @@ public class Fillominordle : MonoBehaviour {
       }
    }
 
-   void Reset () {
+   void Reset () {   //Self explanatory
       FillominoGenerator L = new FillominoGenerator();
       Grid = L.genPuz();
       Debug.LogFormat("[Fillominordle #{0}] The grid is\n[Fillominordle #{0}] {1}{2}{3}{4}{5}\n[Fillominordle #{0}] {6}{7}{8}{9}{10}\n[Fillominordle #{0}] {11}{12}{13}{14}{15}\n[Fillominordle #{0}] {16}{17}{18}{19}{20}\n[Fillominordle #{0}] {21}{22}{23}{24}{25}", ModuleId, Grid[0], Grid[1], Grid[2], Grid[3], Grid[4], Grid[5], Grid[6], Grid[7], Grid[8], Grid[9], Grid[10], Grid[11], Grid[12], Grid[13], Grid[14], Grid[15], Grid[16], Grid[17], Grid[18], Grid[19], Grid[20], Grid[21], Grid[22], Grid[23], Grid[24]);
@@ -236,7 +231,7 @@ public class Fillominordle : MonoBehaviour {
       UpdateStage();
    }
 
-   void Update () {
+   void Update () {  //Keyboard
       if (Animating) {
          return;
       }
@@ -291,18 +286,18 @@ public class Fillominordle : MonoBehaviour {
          B.transform.Rotate(2.0f, 0.0f, 0.0f, Space.Self);
          yield return null;
          Debug.Log(B.GetComponent<Transform>().transform.rotation.x);
-         if (B.GetComponent<Transform>().transform.rotation.x >= .5f || B.GetComponent<Transform>().transform.rotation.x <= -.5f) {
+         if (B.GetComponent<Transform>().transform.rotation.x >= .5f || B.GetComponent<Transform>().transform.rotation.x <= -.5f) { //Quaternions moment
             B.GetComponent<MeshRenderer>().material = Colors[1 + j];
          }
       }
-      B.transform.Rotate(180f, 0.0f, 0.0f, Space.Self);
+      B.transform.Rotate(180f, 0.0f, 0.0f, Space.Self);  //Returns back to original state so you can select the button. Basically this whole function does a 360 flip, but shows only 180
    }
 
    void CalculateColors () { //0 is black, 1 is yellow, 2 is green
       for (int e = 0; e < 25; e++) { //First, set up "Broken Grid"
          GridButBroken[e] = Grid[e];
       }
-      
+
       for (int c = 0; c < 25; c++) { //Next, find all greens
          if (Grid[c] == UserInput[c]) {
             //Debug.Log(StageN);
@@ -314,7 +309,8 @@ public class Fillominordle : MonoBehaviour {
       for (int o = 0; o < 25; o++) { //Finally, find all yellows
          if (ColStates[StageN - 1][o] == 2) { //Obviously a green is not a yellow
             continue;
-         } else {
+         }
+         else {
             if (GridButBroken.Contains(UserInput[o])) { //A yellow is only allowed if there is a cell for it to 'match up' with in the Broken Grid
                ColStates[StageN - 1][o] = 1;
                Remove(UserInput[o]);

@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
-using KModkit;
-using Rnd = UnityEngine.Random;
 
 public class FillominordleChecker : MonoBehaviour {
 
-   public static bool CheckIfGroupsAreCorrectSizes (int Index, int[] Grid) {
+   public static bool CheckIfGroupsAreCorrectSizes (int Index, int[] Grid) {  //DFS or BFS idunno which
 
       List<int> Group = new List<int> { Index };
       List<int> Visited = new List<int> { Index };

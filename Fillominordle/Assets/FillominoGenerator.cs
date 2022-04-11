@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
-using KModkit;
 using Rnd = UnityEngine.Random;
 
 public class FillominoGenerator {
@@ -19,7 +15,7 @@ public class FillominoGenerator {
       Debug.Log(Grid[10].ToString() + " " + Grid[11].ToString() + " " + Grid[12].ToString() + " " + Grid[13].ToString() + " " + Grid[14].ToString());
       Debug.Log(Grid[15].ToString() + " " + Grid[16].ToString() + " " + Grid[17].ToString() + " " + Grid[18].ToString() + " " + Grid[19].ToString());
       Debug.Log(Grid[20].ToString() + " " + Grid[21].ToString() + " " + Grid[22].ToString() + " " + Grid[23].ToString() + " " + Grid[24].ToString());*/
-      bool Reroll9 = Rnd.Range(0, 100) >= 67;
+      bool Reroll9 = Rnd.Range(0, 100) >= 67;   //So the grid does not always have 9s and 8s, we reroll it sometimes.
       bool Reroll8 = Rnd.Range(0, 100) >= 50;
       bool Reroll7 = Rnd.Range(0, 100) >= 33;
       for (int i = 0; i < 25; i++) {
@@ -67,7 +63,7 @@ public class FillominoGenerator {
          for (int i = 0; i < 25; i++) {
             Grid[i] = 0;
          }
-         goto MegaFuckUp;
+         goto MegaFuckUp;  //Fails to merge two adjacent groups
       }
       int Rand = Zeros[Rnd.Range(0, Zeros.Count())];
       //Debug.Log(Rand);
