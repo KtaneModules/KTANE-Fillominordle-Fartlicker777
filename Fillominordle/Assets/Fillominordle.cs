@@ -19,6 +19,8 @@ public class Fillominordle : MonoBehaviour {
    public KMSelectable[] NumberButtons;
    public KMSelectable SubmissiveAndBreedable;
 
+   public GameObject Screen;
+
    public TextMesh[] FrontText;
    public TextMesh[] BackText;
    public TextMesh Stage;
@@ -64,6 +66,8 @@ public class Fillominordle : MonoBehaviour {
    };
    bool[] CanModifyState = new bool[7];
    int StageN = 1;
+
+   int StageTemp;
 
    bool Animating;
 
@@ -140,9 +144,15 @@ public class Fillominordle : MonoBehaviour {
          return;
       }
       if (A == Arrows[0]) {
+         if (StageN == 1 && CanModifyState[6]) {
+            return;
+         }
          StageN = StageN - 1 == 0 ? 7 : StageN - 1;
       }
       else {
+         if (StageN != 7 && CanModifyState[StageN - 1]) {
+            return;
+         }
          StageN = StageN + 1 == 8 ? 1 : StageN + 1;
       }
       UpdateStage();
@@ -158,9 +168,10 @@ public class Fillominordle : MonoBehaviour {
             return;
          }
       }
+      StageTemp = StageN;
       Animating = true;
-      Debug.Log(Grid[0].ToString() + Grid[1].ToString() + Grid[2].ToString() + Grid[3].ToString() + Grid[4].ToString() + Grid[5].ToString() + Grid[6].ToString() + Grid[7].ToString() + Grid[8].ToString() + Grid[9].ToString() + Grid[10].ToString() + Grid[11].ToString() + Grid[12].ToString() + Grid[13].ToString() + Grid[14].ToString() + Grid[15].ToString() + Grid[16].ToString() + Grid[17].ToString() + Grid[18].ToString() + Grid[19].ToString() + Grid[20].ToString() + Grid[21].ToString() + Grid[22].ToString() + Grid[23].ToString() + Grid[24].ToString());
-      Debug.Log(UserInput[0].ToString() + UserInput[1].ToString() + UserInput[2].ToString() + UserInput[3].ToString() + UserInput[4].ToString() + UserInput[5].ToString() + UserInput[6].ToString() + UserInput[7].ToString() + UserInput[8].ToString() + UserInput[9].ToString() + UserInput[10].ToString() + UserInput[11].ToString() + UserInput[12].ToString() + UserInput[13].ToString() + UserInput[14].ToString() + UserInput[15].ToString() + UserInput[16].ToString() + UserInput[17].ToString() + UserInput[18].ToString() + UserInput[19].ToString() + UserInput[20].ToString() + UserInput[21].ToString() + UserInput[22].ToString() + UserInput[23].ToString() + UserInput[24].ToString());
+      //Debug.Log(Grid[0].ToString() + Grid[1].ToString() + Grid[2].ToString() + Grid[3].ToString() + Grid[4].ToString() + Grid[5].ToString() + Grid[6].ToString() + Grid[7].ToString() + Grid[8].ToString() + Grid[9].ToString() + Grid[10].ToString() + Grid[11].ToString() + Grid[12].ToString() + Grid[13].ToString() + Grid[14].ToString() + Grid[15].ToString() + Grid[16].ToString() + Grid[17].ToString() + Grid[18].ToString() + Grid[19].ToString() + Grid[20].ToString() + Grid[21].ToString() + Grid[22].ToString() + Grid[23].ToString() + Grid[24].ToString());
+      //Debug.Log(UserInput[0].ToString() + UserInput[1].ToString() + UserInput[2].ToString() + UserInput[3].ToString() + UserInput[4].ToString() + UserInput[5].ToString() + UserInput[6].ToString() + UserInput[7].ToString() + UserInput[8].ToString() + UserInput[9].ToString() + UserInput[10].ToString() + UserInput[11].ToString() + UserInput[12].ToString() + UserInput[13].ToString() + UserInput[14].ToString() + UserInput[15].ToString() + UserInput[16].ToString() + UserInput[17].ToString() + UserInput[18].ToString() + UserInput[19].ToString() + UserInput[20].ToString() + UserInput[21].ToString() + UserInput[22].ToString() + UserInput[23].ToString() + UserInput[24].ToString());
       
       CalculateColors();
 
@@ -168,6 +179,9 @@ public class Fillominordle : MonoBehaviour {
    }
 
    void UpdateStage () {
+      if (Animating) {
+         return;
+      }
       Stage.text = StageN.ToString() + "\nof\n7";
       for (int i = 0; i < 25; i++) {
          FrontText[i].text = NumStates[StageN - 1][i] == 0 ? "" : NumStates[StageN - 1][i].ToString();
@@ -182,7 +196,8 @@ public class Fillominordle : MonoBehaviour {
    IEnumerator Check () {
       for (int i = 0; i < CheckGroups.Length; i++) {
          for (int j = 0; j < CheckGroups[i].Length; j++) {
-            StartCoroutine(RotateAround(GridButtons[CheckGroups[i][j]], ColStates[StageN - 1][CheckGroups[i][j]]));
+            //Debug.Log(StageTemp);
+            StartCoroutine(RotateAround(GridButtons[CheckGroups[i][j]], ColStates[StageTemp - 1][CheckGroups[i][j]]));
          }
          yield return new WaitForSeconds(.3f);
       }
@@ -193,13 +208,15 @@ public class Fillominordle : MonoBehaviour {
          if (ColStates[StageN - 1][i] != 2) {
             Animating = false;
             ArrowPress(Arrows[1]);
-            UpdateStage();
+            //UpdateStage();
             WillSolve = false;
             break;
          }
       }
       if (WillSolve) {
          GetComponent<KMBombModule>().HandlePass();
+         Screen.GetComponent<MeshRenderer>().material = Colors[3];
+         Audio.PlaySoundAtTransform("Correct", transform);
       }
    }
 
@@ -235,6 +252,7 @@ public class Fillominordle : MonoBehaviour {
          if (CanModifyState[StageN - 1]) {
             if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return)) {
                SubmitPress();
+               return;
             }
             for (int i = 0; i < 18; i++) {
                if (Input.GetKeyDown(NumKeys[i])) {
@@ -269,14 +287,13 @@ public class Fillominordle : MonoBehaviour {
    }
 
    IEnumerator RotateAround (KMSelectable B, int j) {
-      for (int i = 0; i < 45; i++) {
+      for (int i = 0; i < 90; i++) {
          B.transform.Rotate(2.0f, 0.0f, 0.0f, Space.Self);
          yield return null;
-      }
-      B.GetComponent<MeshRenderer>().material = Colors[1 + j];
-      for (int i = 0; i < 45; i++) {
-         B.transform.Rotate(2.0f, 0.0f, 0.0f, Space.Self);
-         yield return null;
+         Debug.Log(B.GetComponent<Transform>().transform.rotation.x);
+         if (B.GetComponent<Transform>().transform.rotation.x >= .5f || B.GetComponent<Transform>().transform.rotation.x <= -.5f) {
+            B.GetComponent<MeshRenderer>().material = Colors[1 + j];
+         }
       }
       B.transform.Rotate(180f, 0.0f, 0.0f, Space.Self);
    }
@@ -288,6 +305,7 @@ public class Fillominordle : MonoBehaviour {
       
       for (int c = 0; c < 25; c++) { //Next, find all greens
          if (Grid[c] == UserInput[c]) {
+            //Debug.Log(StageN);
             ColStates[StageN - 1][c] = 2;
             GridButBroken[c] = 0;
          }
@@ -303,6 +321,10 @@ public class Fillominordle : MonoBehaviour {
             }
          }
       }
+
+      /*for (int i = 0; i < 25; i++) {
+         Debug.Log(ColStates[StageN - 1][i]);
+      }*/
    }
 
    void Remove (int v) { //Remove function

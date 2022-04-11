@@ -19,8 +19,20 @@ public class FillominoGenerator {
       Debug.Log(Grid[10].ToString() + " " + Grid[11].ToString() + " " + Grid[12].ToString() + " " + Grid[13].ToString() + " " + Grid[14].ToString());
       Debug.Log(Grid[15].ToString() + " " + Grid[16].ToString() + " " + Grid[17].ToString() + " " + Grid[18].ToString() + " " + Grid[19].ToString());
       Debug.Log(Grid[20].ToString() + " " + Grid[21].ToString() + " " + Grid[22].ToString() + " " + Grid[23].ToString() + " " + Grid[24].ToString());*/
+      bool Reroll9 = Rnd.Range(0, 100) >= 67;
+      bool Reroll8 = Rnd.Range(0, 100) >= 50;
+      bool Reroll7 = Rnd.Range(0, 100) >= 33;
       for (int i = 0; i < 25; i++) {
          if (Grid[i] > 9) {
+            Grid[i] = 0;
+         }
+         if (Grid[i] == 9 && Reroll9) {
+            Grid[i] = 0;
+         }
+         if (Grid[i] == 8 && Reroll8) {
+            Grid[i] = 0;
+         }
+         if (Grid[i] == 9 && Reroll7) {
             Grid[i] = 0;
          }
       }
