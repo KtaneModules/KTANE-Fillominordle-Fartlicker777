@@ -218,6 +218,7 @@ public class Fillominordle : MonoBehaviour {
    void Reset () {   //Self explanatory
       FillominoGenerator L = new FillominoGenerator();
       Grid = L.genPuz();
+      Debug.LogFormat("[Fillominordle #{0}] {1}", ModuleId, L.LogAttempts());
       Debug.LogFormat("[Fillominordle #{0}] The grid is\n[Fillominordle #{0}] {1}{2}{3}{4}{5}\n[Fillominordle #{0}] {6}{7}{8}{9}{10}\n[Fillominordle #{0}] {11}{12}{13}{14}{15}\n[Fillominordle #{0}] {16}{17}{18}{19}{20}\n[Fillominordle #{0}] {21}{22}{23}{24}{25}", ModuleId, Grid[0], Grid[1], Grid[2], Grid[3], Grid[4], Grid[5], Grid[6], Grid[7], Grid[8], Grid[9], Grid[10], Grid[11], Grid[12], Grid[13], Grid[14], Grid[15], Grid[16], Grid[17], Grid[18], Grid[19], Grid[20], Grid[21], Grid[22], Grid[23], Grid[24]);
       StageN = 1;
       Selected = 0;
@@ -338,6 +339,7 @@ public class Fillominordle : MonoBehaviour {
       }
       FillominoGenerator L = new FillominoGenerator();
       Grid = L.genPuz();
+      Debug.LogFormat("[Fillominordle #{0}] {1}", ModuleId, L.LogAttempts());
       Debug.LogFormat("[Fillominordle #{0}] The grid is\n[Fillominordle #{0}] {1}{2}{3}{4}{5}\n[Fillominordle #{0}] {6}{7}{8}{9}{10}\n[Fillominordle #{0}] {11}{12}{13}{14}{15}\n[Fillominordle #{0}] {16}{17}{18}{19}{20}\n[Fillominordle #{0}] {21}{22}{23}{24}{25}", ModuleId, Grid[0], Grid[1], Grid[2], Grid[3], Grid[4], Grid[5], Grid[6], Grid[7], Grid[8], Grid[9], Grid[10], Grid[11], Grid[12], Grid[13], Grid[14], Grid[15], Grid[16], Grid[17], Grid[18], Grid[19], Grid[20], Grid[21], Grid[22], Grid[23], Grid[24]);
       Stage.text = "1\nof\n7";
       for (int i = 0; i < 25; i++) {

@@ -6,18 +6,24 @@ using Rnd = UnityEngine.Random;
 public class FillominoGenerator {
 
    int[] Grid = new int[25];
+   int Runs = 0;
+   bool Reroll9 = Rnd.Range(0, 100) >= 70;   //So the grid does not always have 9s and 8s, we reroll it sometimes.
+   bool Reroll8 = Rnd.Range(0, 100) >= 67;
+   bool Reroll7 = Rnd.Range(0, 100) >= 60;
 
    public void GenerateFillimino () {
       MegaFuckUp:
-      /*   
+      Runs++;
+      /*Debug.Log(Runs);
+      if (Runs > 300) {
+         return;
+      }*/
+      /*
       Debug.Log(Grid[0].ToString() + " " + Grid[1].ToString() + " " + Grid[2].ToString() + " " + Grid[3].ToString() + " " + Grid[4].ToString());
       Debug.Log(Grid[5].ToString() + " " + Grid[6].ToString() + " " + Grid[7].ToString() + " " + Grid[8].ToString() + " " + Grid[9].ToString());
       Debug.Log(Grid[10].ToString() + " " + Grid[11].ToString() + " " + Grid[12].ToString() + " " + Grid[13].ToString() + " " + Grid[14].ToString());
       Debug.Log(Grid[15].ToString() + " " + Grid[16].ToString() + " " + Grid[17].ToString() + " " + Grid[18].ToString() + " " + Grid[19].ToString());
       Debug.Log(Grid[20].ToString() + " " + Grid[21].ToString() + " " + Grid[22].ToString() + " " + Grid[23].ToString() + " " + Grid[24].ToString());*/
-      bool Reroll9 = Rnd.Range(0, 100) >= 67;   //So the grid does not always have 9s and 8s, we reroll it sometimes.
-      bool Reroll8 = Rnd.Range(0, 100) >= 50;
-      bool Reroll7 = Rnd.Range(0, 100) >= 33;
       for (int i = 0; i < 25; i++) {
          if (Grid[i] > 9) {
             Grid[i] = 0;
@@ -344,5 +350,41 @@ public class FillominoGenerator {
    public int[] genPuz () {
       GenerateFillimino();
       return Grid;
+   }
+
+   public string LogAttempts () {
+      string ret = "Generated in " + Runs + " moves ";
+      if (Reroll7 && Reroll8 && Reroll9) {
+         ret += "with all numbers possible.";
+      }
+      else if (!Reroll7 && !Reroll8 && !Reroll9) {
+         ret += "without 7,8, or 9 being possible.";
+      }
+      else {
+         ret += "with ";
+         if (Reroll7) {
+            if (Reroll8 || Reroll9) {
+               ret += "7 and " + (Reroll8 ? "8 being possible, but not 9." : "9 being possible, but not 8.");
+            }
+            else {
+               ret += "7 being possible, but neither 8 nor 9.";
+            }
+         }
+         else if (Reroll8) {
+            ret += "8 " + (Reroll9 ? "and 9 being possible, but not 7." : "being possible but neither 7 nor 9.");
+         }
+         else {
+            ret += "9 being possible but neither 7 nor 8.";
+         }
+      }
+      Reset();
+      return ret;
+   }
+
+   void Reset () {
+      Runs = 0;
+      Reroll9 = Rnd.Range(0, 100) >= 70;
+      Reroll8 = Rnd.Range(0, 100) >= 67;
+      Reroll7 = Rnd.Range(0, 100) >= 60;
    }
 }
