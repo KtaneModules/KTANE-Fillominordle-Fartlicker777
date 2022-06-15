@@ -352,7 +352,7 @@ public class Fillominordle : MonoBehaviour {
 #pragma warning restore 414
 
    IEnumerator ProcessTwitchCommand (string Command) {
-      Command = Command.Trim().ToUpper().Split(' ').Join();
+      Command = Command.Trim().ToUpper().Split(' ').Join("");
       yield return null;
       if (Command == "CYCLE") {
          for (int i = 0; i < 7; i++) {
