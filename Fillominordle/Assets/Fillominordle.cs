@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -13,6 +14,8 @@ public class Fillominordle : MonoBehaviour {
    public KMSelectable[] Arrows;
    public KMSelectable[] NumberButtons;
    public KMSelectable SubmissiveAndBreedable;
+   public KMColorblindMode CB;
+   bool cbMode;
 
    public GameObject Screen;
 
@@ -179,8 +182,9 @@ public class Fillominordle : MonoBehaviour {
       }
       Stage.text = StageN.ToString() + "\nof\n7";
       for (int i = 0; i < 25; i++) {
-         FrontText[i].text = NumStates[StageN - 1][i] == 0 ? "" : NumStates[StageN - 1][i].ToString();
-         BackText[i].text = NumStates[StageN - 1][i] == 0 ? "" : NumStates[StageN - 1][i].ToString();
+         //This part just replaces the text from preexisting stages                                   | This is so it doesn't mark the symbols while placing them   | The Actual Colorblind mode bullshit
+         FrontText[i].text = NumStates[StageN - 1][i] == 0 ? "" : NumStates[StageN - 1][i].ToString() + (!CanModifyState[StageN - 1]                                ? (cbMode ? new string[] { "@", "x", "*", "!" }[ColStates[StageN - 1][i] + 1] : "") : "");
+         BackText[i].text = NumStates[StageN - 1][i] == 0 ? "" : NumStates[StageN - 1][i].ToString()  + (!CanModifyState[StageN - 1]                                ? (cbMode ? new string[] { "@", "x", "*", "!" }[ColStates[StageN - 1][i] + 1] : "") : "");
          GridButtons[i].GetComponent<MeshRenderer>().material = Colors[ColStates[StageN - 1][i] + 1];
       }
       if (CanModifyState[StageN - 1]) {
@@ -203,7 +207,7 @@ public class Fillominordle : MonoBehaviour {
          if (ColStates[StageN - 1][i] != 2) {
             Animating = false;
             ArrowPress(Arrows[1]);
-            //UpdateStage();
+            UpdateStage();
             WillSolve = false;
             break;
          }
@@ -213,23 +217,11 @@ public class Fillominordle : MonoBehaviour {
          Screen.GetComponent<MeshRenderer>().material = Colors[3];
          Audio.PlaySoundAtTransform("Correct", transform);
       }
-   }
-
-   void Reset () {   //Self explanatory
-      FillominoGenerator L = new FillominoGenerator();
-      Grid = L.genPuz();
-      Debug.LogFormat("[Fillominordle #{0}] {1}", ModuleId, L.LogAttempts());
-      Debug.LogFormat("[Fillominordle #{0}] The grid is\n[Fillominordle #{0}] {1}{2}{3}{4}{5}\n[Fillominordle #{0}] {6}{7}{8}{9}{10}\n[Fillominordle #{0}] {11}{12}{13}{14}{15}\n[Fillominordle #{0}] {16}{17}{18}{19}{20}\n[Fillominordle #{0}] {21}{22}{23}{24}{25}", ModuleId, Grid[0], Grid[1], Grid[2], Grid[3], Grid[4], Grid[5], Grid[6], Grid[7], Grid[8], Grid[9], Grid[10], Grid[11], Grid[12], Grid[13], Grid[14], Grid[15], Grid[16], Grid[17], Grid[18], Grid[19], Grid[20], Grid[21], Grid[22], Grid[23], Grid[24]);
-      StageN = 1;
-      Selected = 0;
-      for (int i = 0; i < 7; i++) {
-         CanModifyState[i] = true;
-         for (int j = 0; j < 25; j++) {
-            ColStates[i][j] = 0;
-            NumStates[i][j] = 0;
-         }
+      else if (StageN == 1) {
+         //Debug.Log("BOZO 8");
+         Animating = false;
+         Reset();
       }
-      UpdateStage();
    }
 
    void Update () {  //Keyboard
@@ -286,10 +278,14 @@ public class Fillominordle : MonoBehaviour {
       for (int i = 0; i < 90; i++) {
          B.transform.Rotate(2.0f, 0.0f, 0.0f, Space.Self);
          yield return null;
-         Debug.Log(B.GetComponent<Transform>().transform.rotation.x);
+         //Debug.Log(B.GetComponent<Transform>().transform.rotation.x);
          if (B.GetComponent<Transform>().transform.rotation.x >= .5f || B.GetComponent<Transform>().transform.rotation.x <= -.5f) { //Quaternions moment
             B.GetComponent<MeshRenderer>().material = Colors[1 + j];
          }
+      }
+      if (cbMode) {
+         FrontText[Array.IndexOf(GridButtons, B)].text = FrontText[Array.IndexOf(GridButtons, B)].text + new string[] { "@", "x", "*", "!" }[1 + j];
+         BackText[Array.IndexOf(GridButtons, B)].text = BackText[Array.IndexOf(GridButtons, B)].text + new string[] { "@", "x", "*", "!" }[1 + j];
       }
       B.transform.Rotate(180f, 0.0f, 0.0f, Space.Self);  //Returns back to original state so you can select the button. Basically this whole function does a 360 flip, but shows only 180
    }
@@ -345,6 +341,21 @@ public class Fillominordle : MonoBehaviour {
       for (int i = 0; i < 25; i++) {
          FrontText[i].text = "";
       }
+      cbMode = CB.ColorblindModeActive;
+   }
+
+   void Reset () {   //Self explanatory
+      StageN = 1;
+      Selected = 0;
+      Animating = false;
+      for (int i = 0; i < 7; i++) {
+         for (int j = 0; j < 25; j++) {
+            ColStates[i][j] = 0;
+            NumStates[i][j] = 0;
+         }
+      }
+      Start();
+      UpdateStage();
    }
 
 #pragma warning disable 414
